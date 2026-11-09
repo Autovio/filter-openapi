@@ -4,23 +4,12 @@ version = "0.1.1"
 description = "Generates a valid OpenAPI spec from source spec. Various options for filtering out parts of the spec you don't want."
 readme = "README.md"
 requires-python = ">=3.12"
-authors = [
-    {name = "Greg Rutz", email = "greg80303@gmail.com"},
-]
-dependencies = [
-    "pyyaml",
-    "pydantic"
-]
-packages = [
-    { include = "filter_openapi", from = "" }
-]
+authors = [{ name = "Greg Rutz", email = "greg80303@gmail.com" }]
+dependencies = ["pyyaml"]
+packages = [{ include = "filter_openapi", from = "" }]
 
 [dependency-groups]
-dev = [
-    "pytest>=8.4.1",
-    "pytest-cov>=6.2.1",
-    "pytest-mock>=3.14.1",
-]
+dev = ["pytest>=8.4.1", "pytest-cov>=6.2.1", "pytest-mock>=3.14.1"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]

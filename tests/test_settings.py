@@ -1,7 +1,6 @@
 import json
 
 import pytest
-from pydantic import ValidationError
 
 from filter_openapi.settings import AppConfig, Options, PathFilter
 
@@ -37,26 +36,26 @@ def test_app_config_defaults():
         "allowedTags": ["Pet"],
         "pathFilters": {},
     }
-    app_config = AppConfig.model_validate(config_data)
+    app_config = AppConfig.from_dict(config_data)
     assert app_config.properties_to_remove == []
     assert app_config.options.remove_unreferenced_schemas is True
     assert isinstance(app_config.options, Options)
 
 
 def test_app_config_missing_required_fields():
-    with pytest.raises(ValidationError):
-        AppConfig.model_validate({})  # Missing allowedTags and pathFilters
+    with pytest.raises(ValueError):
+        AppConfig.from_dict({})  # Missing allowedTags and pathFilters
 
-    with pytest.raises(ValidationError):
-        AppConfig.model_validate({"allowedTags": ["Pet"]})  # Missing pathFilters
+    with pytest.raises(ValueError):
+        AppConfig.from_dict({"allowedTags": ["Pet"]})  # Missing pathFilters
 
-    with pytest.raises(ValidationError):
-        AppConfig.model_validate({"pathFilters": {}})  # Missing allowedTags
+    with pytest.raises(ValueError):
+        AppConfig.from_dict({"pathFilters": {}})  # Missing allowedTags
 
 
 def test_path_filter_missing_allowed_methods():
-    with pytest.raises(ValidationError):
-        PathFilter.model_validate({})
+    with pytest.raises(ValueError):
+        PathFilter.from_dict({})
 
 
 def test_app_config_from_file_not_found():

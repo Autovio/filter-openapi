@@ -16,7 +16,7 @@ always produced.
 This project uses Python and its dependencies are listed in `pyproject.toml`. You can install the dependencies using `pip`:
 
 ```bash
-pip install pyyaml pydantic
+pip install pyyaml
 ```
 
 ## Configuration
