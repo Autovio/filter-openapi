@@ -3,12 +3,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
-def _require(data: dict[str, Any], key: str) -> Any:
-    if key not in data:
-        raise ValueError(f"Missing required config field: '{key}'")
-    return data[key]
-
-
 @dataclass
 class Options:
     remove_unreferenced_schemas: bool = True
@@ -24,17 +18,18 @@ class Options:
 
 @dataclass
 class PathFilter:
-    allowed_methods: list[str]
+    allowed_methods: list[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PathFilter":
-        return cls(allowed_methods=list(_require(data, "allowedMethods")))
+        return cls(allowed_methods=list(data.get("allowedMethods", [])))
 
 
 @dataclass
 class AppConfig:
-    allowed_tags: set[str]
-    path_filters: dict[str, PathFilter]
+    # None means no tag filtering was configured
+    allowed_tags: set[str] | None = None
+    path_filters: dict[str, PathFilter] = field(default_factory=dict)
     keep_operation_ids: set[str] = field(default_factory=set)
     properties_to_remove: list[str] = field(default_factory=list)
     options: Options = field(default_factory=Options)
@@ -42,10 +37,10 @@ class AppConfig:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "AppConfig":
         return cls(
-            allowed_tags=set(_require(data, "allowedTags")),
+            allowed_tags=(set(data["allowedTags"]) if "allowedTags" in data else None),
             path_filters={
                 path: PathFilter.from_dict(path_filter)
-                for path, path_filter in _require(data, "pathFilters").items()
+                for path, path_filter in data.get("pathFilters", {}).items()
             },
             keep_operation_ids=set(data.get("keepOperationIds", [])),
             properties_to_remove=list(data.get("propertiesToRemove", [])),

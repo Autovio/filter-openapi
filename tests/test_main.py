@@ -147,6 +147,22 @@ def test_main_keep_operation_ids(tmp_path):
     assert [tag["name"] for tag in result_data["tags"]] == ["TestTag", "UnusedTag"]
 
 
+def test_main_empty_config(tmp_path, capsys):
+    """An empty config keeps all paths and tags."""
+    config_path = tmp_path / "config.json"
+    config_path.write_text("{}")
+    cli_args = ["script_name", "tests/data/openapi.json", "-c", str(config_path)]
+
+    with patch.object(sys, "argv", cli_args):
+        main()
+
+    result_data = json.loads(capsys.readouterr().out)
+    assert set(result_data["paths"]) == {"/test", "/unused"}
+    assert set(result_data["paths"]["/test"]) == {"get", "post"}
+    assert [tag["name"] for tag in result_data["tags"]] == ["TestTag", "UnusedTag"]
+    assert "UnusedSchema" not in result_data["components"]["schemas"]
+
+
 def test_main_stdout(capsys):
     """Test writing to stdout."""
     config_path = "tests/data/config.json"

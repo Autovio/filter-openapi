@@ -25,9 +25,9 @@ This installs the `filter-openapi` command.
 
 The tool's behavior is controlled by a JSON configuration file. You can create your own `config.json` based on the provided `config.example.json`.
 
-Here's an overview of the configuration options:
+Here's an overview of the configuration options. All keys are optional; an empty configuration (`{}`) leaves the specification unchanged apart from removing unreferenced schemas.
 
-- **`allowedTags`**: An array of strings representing the tags to keep. Any path that does not have at least one of these tags will be removed.
+- **`allowedTags`**: An array of strings representing the tags to keep. Any path that does not have at least one of these tags will be removed. If neither `allowedTags` nor `keepOperationIds` is set, no filtering by tag is done.
 
   ```json
   "allowedTags": [
@@ -36,7 +36,7 @@ Here's an overview of the configuration options:
   ]
   ```
 
-- **`keepOperationIds`**: (Optional) An array of `operationId`s to keep in addition to the operations matched by `allowedTags`. Use this to cherry-pick individual operations from tags that are otherwise excluded. The tags of these operations are also kept in the top-level `tags` list.
+- **`keepOperationIds`**: An array of `operationId`s to keep in addition to the operations matched by `allowedTags`. Use this to cherry-pick individual operations from tags that are otherwise excluded. If `allowedTags` is not set, only these operations are kept. The tags of these operations are also kept in the top-level `tags` list.
 
   ```json
   "keepOperationIds": [
@@ -44,7 +44,7 @@ Here's an overview of the configuration options:
   ]
   ```
 
-- **`pathFilters`**: An object where each key is a path in the OpenAPI specification (e.g., `/chat/completions`). The value is an object with an `allowedMethods` array, specifying which HTTP methods to keep (e.g., `"POST"`). An empty `allowedMethods` array will cause the entire path to be removed.
+- **`pathFilters`**: An object where each key is a path in the OpenAPI specification (e.g., `/chat/completions`). The value is an object with an `allowedMethods` array, specifying which HTTP methods to keep (e.g., `"POST"`). An empty or missing `allowedMethods` array will cause the entire path to be removed.
 
   ```json
   "pathFilters": {

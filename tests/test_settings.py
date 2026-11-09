@@ -45,20 +45,22 @@ def test_app_config_defaults():
     assert isinstance(app_config.options, Options)
 
 
-def test_app_config_missing_required_fields():
-    with pytest.raises(ValueError):
-        AppConfig.from_dict({})  # Missing allowedTags and pathFilters
+def test_app_config_empty():
+    app_config = AppConfig.from_dict({})
+    assert app_config.allowed_tags is None
+    assert app_config.path_filters == {}
+    assert app_config.keep_operation_ids == set()
+    assert app_config.properties_to_remove == []
+    assert app_config.options.remove_unreferenced_schemas is True
 
-    with pytest.raises(ValueError):
-        AppConfig.from_dict({"allowedTags": ["Pet"]})  # Missing pathFilters
 
-    with pytest.raises(ValueError):
-        AppConfig.from_dict({"pathFilters": {}})  # Missing allowedTags
+def test_app_config_explicit_empty_allowed_tags():
+    app_config = AppConfig.from_dict({"allowedTags": []})
+    assert app_config.allowed_tags == set()
 
 
 def test_path_filter_missing_allowed_methods():
-    with pytest.raises(ValueError):
-        PathFilter.from_dict({})
+    assert PathFilter.from_dict({}).allowed_methods == []
 
 
 def test_app_config_from_file_not_found():
