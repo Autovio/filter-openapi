@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 def find_all_refs(obj):
-    """Recursively find all $ref values in a YAML object."""
+    """Recursively find all $ref values in a JSON object."""
     refs = set()
     if isinstance(obj, dict):
         for k, v in obj.items():

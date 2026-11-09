@@ -5,7 +5,7 @@ description = "Generates a valid OpenAPI spec from source spec. Various options 
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "Greg Rutz", email = "greg80303@gmail.com" }]
-dependencies = ["pyyaml"]
+dependencies = []
 packages = [{ include = "filter_openapi", from = "" }]
 
 [dependency-groups]

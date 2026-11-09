@@ -1,8 +1,7 @@
 import argparse
+import json
 import logging
 import sys
-
-import yaml
 
 from .actions.filter_endpoints import Method, filter_endpoint
 from .actions.filter_paths_by_tags import filter_paths_by_tags
@@ -24,9 +23,9 @@ def setup_logging(verbose=False):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Modify an OpenAPI specification YAML doc for OpenAI's API."
+        description="Modify an OpenAPI specification JSON doc for OpenAI's API."
     )
-    parser.add_argument("input_file", help="Path to the input OpenAPI YAML file.")
+    parser.add_argument("input_file", help="Path to the input OpenAPI JSON file.")
     parser.add_argument(
         "-c",
         "--config",
@@ -67,23 +66,23 @@ def main():
         logger.error(f"Error loading configuration: {e}")
         sys.exit(1)
 
-    # Read the input YAML file
+    # Read the input JSON file
     try:
-        logger.debug("Reading input YAML file")
+        logger.debug("Reading input JSON file")
         with open(args.input_file, "r") as f:
-            yaml_content = f.read()
-        logger.debug(f"Successfully read {len(yaml_content)} bytes from input file")
+            json_content = f.read()
+        logger.debug(f"Successfully read {len(json_content)} bytes from input file")
     except Exception as e:
         logger.error(f"Error reading input file: {e}")
         sys.exit(1)
 
-    # Parse YAML
+    # Parse JSON
     try:
-        logger.debug("Parsing YAML content")
-        data = yaml.safe_load(yaml_content)
-        logger.debug("Successfully parsed YAML content")
+        logger.debug("Parsing JSON content")
+        data = json.loads(json_content)
+        logger.debug("Successfully parsed JSON content")
     except Exception as e:
-        logger.error(f"Error parsing YAML: {e}")
+        logger.error(f"Error parsing JSON: {e}")
         sys.exit(1)
 
     # Remove all 'x-oaiMeta' properties
@@ -125,13 +124,13 @@ def main():
         logger.debug(f"Found {len(referenced_schemas)} referenced schemas")
         data = filter_schemas(data, referenced_schemas)
 
-    # Dump YAML
+    # Dump JSON
     try:
-        logger.debug("Converting modified data back to YAML")
-        output_yaml = yaml.safe_dump(data, sort_keys=False, allow_unicode=True)
-        logger.debug(f"Generated {len(output_yaml)} bytes of YAML output")
+        logger.debug("Converting modified data back to JSON")
+        output_json = json.dumps(data, indent=2, ensure_ascii=False)
+        logger.debug(f"Generated {len(output_json)} bytes of JSON output")
     except Exception as e:
-        logger.error(f"Error dumping YAML: {e}")
+        logger.error(f"Error dumping JSON: {e}")
         sys.exit(1)
 
     # Write to output file or stdout
@@ -139,14 +138,14 @@ def main():
         try:
             logger.info(f"Writing output to file: {args.output_file}")
             with open(args.output_file, "w") as f:
-                f.write(output_yaml)
+                f.write(output_json)
             logger.info("Successfully wrote output file")
         except Exception as e:
             logger.error(f"Error writing to output file: {e}")
             sys.exit(1)
     else:
         logger.info("Writing output to stdout")
-        print(output_yaml)
+        print(output_json)
 
     logger.info("OpenAPI specification modification completed")
 

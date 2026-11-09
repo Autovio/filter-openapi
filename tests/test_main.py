@@ -1,43 +1,43 @@
+import json
 import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
-import yaml
 
-from filter_openapi.main import main
+from filter_openapi.__main__ import main
 
 
 @pytest.fixture
 def mock_args(tmp_path):
     """Fixture to mock command line arguments."""
-    input_yaml = tmp_path / "input.yaml"
+    input_json = tmp_path / "input.json"
     config_json = tmp_path / "config.json"
-    output_yaml = tmp_path / "output.yaml"
+    output_json = tmp_path / "output.json"
 
     # Create dummy files
-    with open(input_yaml, "w") as f:
-        yaml.dump({"info": {"title": "Test"}}, f)
+    with open(input_json, "w") as f:
+        json.dump({"info": {"title": "Test"}}, f)
     with open(config_json, "w") as f:
         f.write('{"allowedTags": [], "pathFilters": {}}')
 
     return [
-        "filter_openapi/main.py",
-        str(input_yaml),
+        "filter_openapi/__main__.py",
+        str(input_json),
         "--config",
         str(config_json),
         "--output",
-        str(output_yaml),
+        str(output_json),
         "--verbose",
     ]
 
 
-@patch("filter_openapi.main.AppConfig.from_file")
-@patch("filter_openapi.main.remove_properties")
-@patch("filter_openapi.main.filter_paths_by_tags")
-@patch("filter_openapi.main.filter_tags_list")
-@patch("filter_openapi.main.filter_endpoint")
-@patch("filter_openapi.main.get_referenced_schemas")
-@patch("filter_openapi.main.filter_schemas")
+@patch("filter_openapi.__main__.AppConfig.from_file")
+@patch("filter_openapi.__main__.remove_properties")
+@patch("filter_openapi.__main__.filter_paths_by_tags")
+@patch("filter_openapi.__main__.filter_tags_list")
+@patch("filter_openapi.__main__.filter_endpoint")
+@patch("filter_openapi.__main__.get_referenced_schemas")
+@patch("filter_openapi.__main__.filter_schemas")
 def test_main_flow(
     mock_filter_schemas,
     mock_get_referenced_schemas,
@@ -79,15 +79,15 @@ def test_main_flow(
     mock_get_referenced_schemas.assert_called_once()
     mock_filter_schemas.assert_called_once()
 
-    output_file = tmp_path / "output.yaml"
+    output_file = tmp_path / "output.json"
     assert output_file.exists()
 
 
 def test_main_integration(tmp_path, capsys):
     """An integration-style test for the main script."""
     config_path = "tests/data/config.json"
-    input_path = "tests/data/openapi.yaml"
-    output_path = tmp_path / "output.yaml"
+    input_path = "tests/data/openapi.json"
+    output_path = tmp_path / "output.json"
 
     cli_args = [
         "script_name",
@@ -102,7 +102,7 @@ def test_main_integration(tmp_path, capsys):
         main()
 
     with open(output_path, "r") as f:
-        result_data = yaml.safe_load(f)
+        result_data = json.load(f)
 
     # Check filtering results
     assert "UnusedTag" not in [tag["name"] for tag in result_data["tags"]]
@@ -116,7 +116,7 @@ def test_main_integration(tmp_path, capsys):
 def test_main_stdout(capsys):
     """Test writing to stdout."""
     config_path = "tests/data/config.json"
-    input_path = "tests/data/openapi.yaml"
+    input_path = "tests/data/openapi.json"
     cli_args = ["script_name", input_path, "-c", config_path]
 
     with patch.object(sys, "argv", cli_args):
@@ -124,12 +124,13 @@ def test_main_stdout(capsys):
 
     captured = capsys.readouterr()
     assert "Simple API" in captured.out
-    result_data = yaml.safe_load(captured.out)
+    result_data = json.loads(captured.out)
     assert "UnusedTag" not in [tag["name"] for tag in result_data["tags"]]
 
 
 @patch(
-    "filter_openapi.main.AppConfig.from_file", side_effect=Exception("File read error")
+    "filter_openapi.__main__.AppConfig.from_file",
+    side_effect=Exception("File read error"),
 )
 def test_main_config_load_error(mock_from_file, mock_args, caplog):
     with patch.object(sys, "argv", mock_args):
@@ -142,7 +143,7 @@ def test_main_config_load_error(mock_from_file, mock_args, caplog):
 @patch("builtins.open", side_effect=IOError("Cannot read"))
 def test_main_input_file_read_error(mock_open, mock_args, caplog):
     # we need AppConfig to load successfully
-    with patch("filter_openapi.main.AppConfig.from_file"):
+    with patch("filter_openapi.__main__.AppConfig.from_file"):
         with patch.object(sys, "argv", mock_args):
             with pytest.raises(SystemExit) as e:
                 main()

@@ -13,11 +13,7 @@ always produced.
 
 ## Installation
 
-This project uses Python and its dependencies are listed in `pyproject.toml`. You can install the dependencies using `pip`:
-
-```bash
-pip install pyyaml
-```
+This project requires Python 3.12+ and has no third-party runtime dependencies.
 
 ## Configuration
 
@@ -64,18 +60,18 @@ Here's an overview of the configuration options:
 
 The tool is run from the command line and accepts the following arguments:
 
-- `input_file`: (Required) The path to the input OpenAPI YAML file.
+- `input_file`: (Required) The path to the input OpenAPI JSON file.
 - `-c` or `--config`: (Required) The path to your `config.json` file.
-- `-o` or `--output`: (Optional) The path to the output file. If not provided, the modified YAML will be printed to standard output.
+- `-o` or `--output`: (Optional) The path to the output file. If not provided, the modified JSON will be printed to standard output.
 - `-v` or `--verbose`: (Optional) Enable verbose logging.
 
 ### Example
 
 ```bash
-python -m filter_openapi.main openai.yaml --config config.json --output openapi_filtered.yaml
+python -m filter_openapi openai.json --config config.json --output openapi_filtered.json
 ```
 
 This command will:
-1. Read the `openai.yaml` file.
+1. Read the `openai.json` file.
 2. Apply the transformations defined in `config.json`.
-3. Write the resulting specification to `openapi_prepared.yaml`.
+3. Write the resulting specification to `openapi_filtered.json`.
