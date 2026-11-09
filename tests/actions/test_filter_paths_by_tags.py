@@ -1,6 +1,6 @@
 import pytest
 
-from filter_openapi.actions.filter_paths_by_tags import filter_paths_by_tags
+from filter_openapi import filter_paths_by_tags
 
 
 @pytest.fixture

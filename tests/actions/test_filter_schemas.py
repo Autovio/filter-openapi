@@ -1,6 +1,6 @@
 import pytest
 
-from filter_openapi.actions.filter_schemas import (
+from filter_openapi import (
     filter_schemas,
     get_referenced_schemas,
 )

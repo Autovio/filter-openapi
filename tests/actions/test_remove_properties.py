@@ -1,6 +1,6 @@
 import pytest
 
-from filter_openapi.actions.remove_properties import remove_properties
+from filter_openapi import remove_properties
 
 
 @pytest.fixture

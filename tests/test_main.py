@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from filter_openapi.__main__ import main
+from filter_openapi import main
 
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def mock_args(tmp_path):
         f.write('{"allowedTags": [], "pathFilters": {}}')
 
     return [
-        "filter_openapi/__main__.py",
+        "filter_openapi.py",
         str(input_json),
         "--config",
         str(config_json),
@@ -31,13 +31,13 @@ def mock_args(tmp_path):
     ]
 
 
-@patch("filter_openapi.__main__.AppConfig.from_file")
-@patch("filter_openapi.__main__.remove_properties")
-@patch("filter_openapi.__main__.filter_paths_by_tags")
-@patch("filter_openapi.__main__.filter_tags_list")
-@patch("filter_openapi.__main__.filter_endpoint")
-@patch("filter_openapi.__main__.get_referenced_schemas")
-@patch("filter_openapi.__main__.filter_schemas")
+@patch("filter_openapi.AppConfig.from_file")
+@patch("filter_openapi.remove_properties")
+@patch("filter_openapi.filter_paths_by_tags")
+@patch("filter_openapi.filter_tags_list")
+@patch("filter_openapi.filter_endpoint")
+@patch("filter_openapi.get_referenced_schemas")
+@patch("filter_openapi.filter_schemas")
 def test_main_flow(
     mock_filter_schemas,
     mock_get_referenced_schemas,
@@ -53,11 +53,11 @@ def test_main_flow(
     """Test the main execution flow, mocking all action functions."""
     # Setup mocks
     mock_config = MagicMock()
-    mock_config.properties_to_remove = ["x-prop"]
-    mock_config.allowed_tags = {"tag1"}
-    mock_config.keep_operation_ids = set()
-    mock_config.path_filters.items.return_value = [("/path", MagicMock())]
-    mock_config.options.remove_unreferenced_schemas = True
+    mock_config.propertiesToRemove = ["x-prop"]
+    mock_config.allowedTags = {"tag1"}
+    mock_config.keepOperationIds = set()
+    mock_config.pathFilters.items.return_value = [("/path", MagicMock())]
+    mock_config.options.removeUnreferencedSchemas = True
     mock_from_file.return_value = mock_config
 
     # Mock return values of actions to be passthrough
@@ -179,7 +179,7 @@ def test_main_stdout(capsys):
 
 
 @patch(
-    "filter_openapi.__main__.AppConfig.from_file",
+    "filter_openapi.AppConfig.from_file",
     side_effect=Exception("File read error"),
 )
 def test_main_config_load_error(mock_from_file, mock_args, caplog):
@@ -193,7 +193,7 @@ def test_main_config_load_error(mock_from_file, mock_args, caplog):
 @patch("builtins.open", side_effect=IOError("Cannot read"))
 def test_main_input_file_read_error(mock_open, mock_args, caplog):
     # we need AppConfig to load successfully
-    with patch("filter_openapi.__main__.AppConfig.from_file"):
+    with patch("filter_openapi.AppConfig.from_file"):
         with patch.object(sys, "argv", mock_args):
             with pytest.raises(SystemExit) as e:
                 main()

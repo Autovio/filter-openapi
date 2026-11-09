@@ -1,6 +1,6 @@
 import pytest
 
-from filter_openapi.actions.filter_endpoints import Method, filter_endpoint
+from filter_openapi import Method, filter_endpoint
 
 
 @pytest.fixture

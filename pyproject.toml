@@ -8,7 +8,7 @@ authors = [{ name = "Greg Rutz", email = "greg80303@gmail.com" }]
 dependencies = []
 
 [project.scripts]
-filter-openapi = "filter_openapi.__main__:main"
+filter-openapi = "filter_openapi:main"
 
 [dependency-groups]
 dev = ["pytest>=8.4.1", "pytest-cov>=6.2.1", "pytest-mock>=3.14.1"]
