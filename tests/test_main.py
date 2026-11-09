@@ -55,13 +55,14 @@ def test_main_flow(
     mock_config = MagicMock()
     mock_config.properties_to_remove = ["x-prop"]
     mock_config.allowed_tags = {"tag1"}
+    mock_config.keep_operation_ids = set()
     mock_config.path_filters.items.return_value = [("/path", MagicMock())]
     mock_config.options.remove_unreferenced_schemas = True
     mock_from_file.return_value = mock_config
 
     # Mock return values of actions to be passthrough
     mock_remove_properties.side_effect = lambda d, p: d
-    mock_filter_paths_by_tags.side_effect = lambda d, t: d
+    mock_filter_paths_by_tags.side_effect = lambda d, t, o: d
     mock_filter_tags_list.side_effect = lambda d, t: d
     mock_filter_endpoint.side_effect = lambda d, p, m: d
     mock_get_referenced_schemas.return_value = {"Schema1"}
@@ -111,6 +112,39 @@ def test_main_integration(tmp_path, capsys):
     assert "x-test" not in result_data["paths"]["/test"]["get"]
     assert "UnusedSchema" not in result_data["components"]["schemas"]
     assert "TestSchema" in result_data["components"]["schemas"]
+
+
+def test_main_keep_operation_ids(tmp_path):
+    """Operations listed in keepOperationIds are kept along with their tags."""
+    config_path = tmp_path / "config.json"
+    with open(config_path, "w") as f:
+        json.dump(
+            {
+                "allowedTags": ["TestTag"],
+                "keepOperationIds": ["getUnused"],
+                "pathFilters": {},
+            },
+            f,
+        )
+    output_path = tmp_path / "output.json"
+    cli_args = [
+        "script_name",
+        "tests/data/openapi.json",
+        "-c",
+        str(config_path),
+        "-o",
+        str(output_path),
+    ]
+
+    with patch.object(sys, "argv", cli_args):
+        main()
+
+    with open(output_path, "r") as f:
+        result_data = json.load(f)
+
+    assert "/test" in result_data["paths"]
+    assert "get" in result_data["paths"]["/unused"]
+    assert [tag["name"] for tag in result_data["tags"]] == ["TestTag", "UnusedTag"]
 
 
 def test_main_stdout(capsys):

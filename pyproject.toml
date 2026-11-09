@@ -6,7 +6,9 @@ readme = "README.md"
 requires-python = ">=3.12"
 authors = [{ name = "Greg Rutz", email = "greg80303@gmail.com" }]
 dependencies = []
-packages = [{ include = "filter_openapi", from = "" }]
+
+[project.scripts]
+filter-openapi = "filter_openapi.__main__:main"
 
 [dependency-groups]
 dev = ["pytest>=8.4.1", "pytest-cov>=6.2.1", "pytest-mock>=3.14.1"]

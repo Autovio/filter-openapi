@@ -112,3 +112,24 @@ def test_operation_without_tags_field(sample_data):
     # The operation in "/no/tags" has no "tags" field
     result = filter_paths_by_tags(sample_data, allowed_tags)
     assert "/no/tags" not in result["paths"]
+
+
+def test_keep_operation_ids_in_addition_to_tags():
+    data = {
+        "paths": {
+            "/pet": {"get": {"tags": ["pet"], "operationId": "getPet"}},
+            "/store": {
+                "get": {"tags": ["store"], "operationId": "getStore"},
+                "post": {"tags": ["store"], "operationId": "createStore"},
+            },
+            "/user": {"get": {"tags": ["user"], "operationId": "getUser"}},
+            "/no/tags": {"get": {"operationId": "noTags"}},
+        }
+    }
+    result = filter_paths_by_tags(data, {"pet"}, {"getStore", "noTags"})
+
+    kept_paths = result["paths"]
+    assert "get" in kept_paths["/pet"]
+    assert list(kept_paths["/store"]) == ["get"]
+    assert "/user" not in kept_paths
+    assert "get" in kept_paths["/no/tags"]

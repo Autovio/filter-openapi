@@ -35,6 +35,7 @@ class PathFilter:
 class AppConfig:
     allowed_tags: set[str]
     path_filters: dict[str, PathFilter]
+    keep_operation_ids: set[str] = field(default_factory=set)
     properties_to_remove: list[str] = field(default_factory=list)
     options: Options = field(default_factory=Options)
 
@@ -46,6 +47,7 @@ class AppConfig:
                 path: PathFilter.from_dict(path_filter)
                 for path, path_filter in _require(data, "pathFilters").items()
             },
+            keep_operation_ids=set(data.get("keepOperationIds", [])),
             properties_to_remove=list(data.get("propertiesToRemove", [])),
             options=Options.from_dict(data.get("options", {})),
         )

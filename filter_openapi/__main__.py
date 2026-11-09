@@ -93,13 +93,26 @@ def main():
         data = remove_properties(data, config.properties_to_remove)
 
     allowed_tags = config.allowed_tags
+    keep_operation_ids = config.keep_operation_ids
 
-    # Filter paths by allowed tags
+    # Filter paths by allowed tags and operationIds
     logger.info(f"Filtering paths by tags: {', '.join(sorted(allowed_tags))}")
-    data = filter_paths_by_tags(data, allowed_tags)
+    if keep_operation_ids:
+        logger.info(
+            f"Also keeping operationIds: {', '.join(sorted(keep_operation_ids))}"
+        )
+    data = filter_paths_by_tags(data, allowed_tags, keep_operation_ids)
+
+    # Keep top-level tags used by operations kept via operationId
+    tags_to_keep = set(allowed_tags)
+    for methods in data.get("paths", {}).values():
+        for op in methods.values():
+            if op.get("operationId") in keep_operation_ids:
+                tags_to_keep.update(op.get("tags", []))
+
     # Filter top-level tags list
     logger.info("Filtering top-level tags list")
-    data = filter_tags_list(data, allowed_tags)
+    data = filter_tags_list(data, tags_to_keep)
 
     # Filter specific endpoints based on config
     logger.info("Filtering specific endpoints based on configuration")

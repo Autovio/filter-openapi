@@ -3,7 +3,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def filter_paths_by_tags(openapi_data, allowed_tags):
+def filter_paths_by_tags(openapi_data, allowed_tags, keep_operation_ids=frozenset()):
+    """Keep operations that have an allowed tag or a listed operationId."""
     if not isinstance(openapi_data, dict) or "paths" not in openapi_data:
         logger.warning("Input data has no paths to filter")
         return openapi_data
@@ -17,10 +18,16 @@ def filter_paths_by_tags(openapi_data, allowed_tags):
         filtered_methods = {}
         for method, op in methods.items():
             tags = op.get("tags", [])
+            operation_id = op.get("operationId")
             if any(tag in allowed_tags for tag in tags):
                 filtered_methods[method] = op
                 logger.debug(
                     f"Keeping {method.upper()} {path} (tags: {', '.join(tags)})"
+                )
+            elif operation_id in keep_operation_ids:
+                filtered_methods[method] = op
+                logger.debug(
+                    f"Keeping {method.upper()} {path} (operationId: {operation_id})"
                 )
             else:
                 logger.debug(

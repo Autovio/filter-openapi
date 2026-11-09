@@ -13,7 +13,13 @@ always produced.
 
 ## Installation
 
-This project requires Python 3.12+ and has no third-party runtime dependencies.
+This project requires Python 3.12+ and has no third-party runtime dependencies. Install it directly from GitHub:
+
+```bash
+pip install git+https://github.com/Autovio/filter-openapi
+```
+
+This installs the `filter-openapi` command.
 
 ## Configuration
 
@@ -27,6 +33,14 @@ Here's an overview of the configuration options:
   "allowedTags": [
       "Chat",
       "Completions"
+  ]
+  ```
+
+- **`keepOperationIds`**: (Optional) An array of `operationId`s to keep in addition to the operations matched by `allowedTags`. Use this to cherry-pick individual operations from tags that are otherwise excluded. The tags of these operations are also kept in the top-level `tags` list.
+
+  ```json
+  "keepOperationIds": [
+      "listModels"
   ]
   ```
 
@@ -68,8 +82,10 @@ The tool is run from the command line and accepts the following arguments:
 ### Example
 
 ```bash
-python -m filter_openapi openai.json --config config.json --output openapi_filtered.json
+filter-openapi openai.json --config config.json --output openapi_filtered.json
 ```
+
+Alternatively, run it as a module with `python -m filter_openapi ...`.
 
 This command will:
 1. Read the `openai.json` file.

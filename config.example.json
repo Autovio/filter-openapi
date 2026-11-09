@@ -4,6 +4,9 @@
         "Completions",
         "Embeddings"
     ],
+    "keepOperationIds": [
+        "listModels"
+    ],
     "propertiesToRemove": [
         "x-oaiMeta"
     ],
