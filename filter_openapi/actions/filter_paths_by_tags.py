@@ -37,6 +37,6 @@ def filter_paths_by_tags(openapi_data, allowed_tags, keep_operation_ids=frozense
             filtered_paths[path] = filtered_methods
 
     removed_paths = original_path_count - len(filtered_paths)
-    logger.info(f"Removed {removed_paths} paths, kept {len(filtered_paths)} paths")
+    logger.debug(f"Removed {removed_paths} paths, kept {len(filtered_paths)} paths")
     openapi_data["paths"] = filtered_paths
     return openapi_data

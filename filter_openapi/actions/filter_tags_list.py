@@ -26,7 +26,7 @@ def filter_tags_list(openapi_data, allowed_tags):
     ]
 
     removed_count = len(original_tags) - len(filtered_tags)
-    logger.info(f"Removed {removed_count} tags, kept {len(filtered_tags)} tags")
+    logger.debug(f"Removed {removed_count} tags, kept {len(filtered_tags)} tags")
     if removed_count > 0:
         removed_names = [
             tag.get("name")

@@ -64,7 +64,7 @@ def get_referenced_schemas(openapi_data):
                     queue.append(sub_schema)
                     logger.debug(f"Found nested schema reference: {sub_schema}")
 
-    logger.info(
+    logger.debug(
         f"Found {len(referenced)} referenced schemas out of {len(schemas)} total schemas"
     )
     return referenced
@@ -83,7 +83,7 @@ def filter_schemas(openapi_data, referenced_schemas):
     filtered = {k: v for k, v in schemas.items() if k in referenced_schemas}
     removed_count = original_count - len(filtered)
 
-    logger.info(
+    logger.debug(
         f"Removed {removed_count} unreferenced schemas, kept {len(filtered)} schemas"
     )
     if removed_count > 0:

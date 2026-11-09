@@ -50,7 +50,7 @@ def main():
     # Setup logging
     setup_logging(args.verbose)
     logger = logging.getLogger(__name__)
-    logger.info("Starting OpenAPI specification modification")
+    logger.debug("Starting OpenAPI specification modification")
     logger.debug(f"Input file: {args.input_file}")
     logger.debug(f"Config file: {args.config_file}")
     logger.debug(
@@ -87,7 +87,7 @@ def main():
 
     # Remove all 'x-oaiMeta' properties
     if config.properties_to_remove:
-        logger.info(
+        logger.debug(
             f"Removing properties: {', '.join(sorted(config.properties_to_remove))}"
         )
         data = remove_properties(data, config.properties_to_remove)
@@ -96,16 +96,16 @@ def main():
     keep_operation_ids = config.keep_operation_ids
 
     if allowed_tags is None and not keep_operation_ids:
-        logger.info(
+        logger.debug(
             "No allowedTags or keepOperationIds configured, keeping all paths and tags"
         )
     else:
         allowed_tags = allowed_tags or set()
 
         # Filter paths by allowed tags and operationIds
-        logger.info(f"Filtering paths by tags: {', '.join(sorted(allowed_tags))}")
+        logger.debug(f"Filtering paths by tags: {', '.join(sorted(allowed_tags))}")
         if keep_operation_ids:
-            logger.info(
+            logger.debug(
                 f"Also keeping operationIds: {', '.join(sorted(keep_operation_ids))}"
             )
         data = filter_paths_by_tags(data, allowed_tags, keep_operation_ids)
@@ -118,11 +118,11 @@ def main():
                     tags_to_keep.update(op.get("tags", []))
 
         # Filter top-level tags list
-        logger.info("Filtering top-level tags list")
+        logger.debug("Filtering top-level tags list")
         data = filter_tags_list(data, tags_to_keep)
 
     # Filter specific endpoints based on config
-    logger.info("Filtering specific endpoints based on configuration")
+    logger.debug("Filtering specific endpoints based on configuration")
     for path, path_filter in config.path_filters.items():
         methods_to_keep = [Method(m.lower()) for m in path_filter.allowed_methods]
         if methods_to_keep:
@@ -139,7 +139,7 @@ def main():
 
     # Remove unreferenced schemas
     if config.options.remove_unreferenced_schemas:
-        logger.info("Removing unreferenced schemas")
+        logger.debug("Removing unreferenced schemas")
         referenced_schemas = get_referenced_schemas(data)
         logger.debug(f"Found {len(referenced_schemas)} referenced schemas")
         data = filter_schemas(data, referenced_schemas)
@@ -156,18 +156,18 @@ def main():
     # Write to output file or stdout
     if args.output_file:
         try:
-            logger.info(f"Writing output to file: {args.output_file}")
+            logger.debug(f"Writing output to file: {args.output_file}")
             with open(args.output_file, "w") as f:
                 f.write(output_json)
-            logger.info("Successfully wrote output file")
+            logger.debug("Successfully wrote output file")
         except Exception as e:
             logger.error(f"Error writing to output file: {e}")
             sys.exit(1)
     else:
-        logger.info("Writing output to stdout")
+        logger.debug("Writing output to stdout")
         print(output_json)
 
-    logger.info("OpenAPI specification modification completed")
+    logger.debug("OpenAPI specification modification completed")
 
 
 if __name__ == "__main__":

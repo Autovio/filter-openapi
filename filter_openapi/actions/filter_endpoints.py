@@ -42,7 +42,7 @@ def filter_endpoint(
 
     # If no methods specified, remove the entire path
     if not methods_to_keep:
-        logger.info(f"Removing entire path: {path}")
+        logger.debug(f"Removing entire path: {path}")
         methods = list(paths[path].keys())
         if methods:
             logger.debug(f"Removing methods: {', '.join(methods).upper()}")
@@ -57,7 +57,7 @@ def filter_endpoint(
     methods_to_remove = current_methods - allowed_methods
 
     if methods_to_remove:
-        logger.info(f"Filtering methods for {path}")
+        logger.debug(f"Filtering methods for {path}")
         logger.debug(f"Keeping methods: {', '.join(allowed_methods).upper()}")
         logger.debug(f"Removing methods: {', '.join(methods_to_remove).upper()}")
 
@@ -67,7 +67,7 @@ def filter_endpoint(
 
         # If no methods left after filtering, remove the entire path
         if not paths[path]:
-            logger.info(f"Removing {path} path (no methods remaining after filter)")
+            logger.debug(f"Removing {path} path (no methods remaining after filter)")
             del paths[path]
     else:
         logger.debug(f"No methods to filter for {path}")
